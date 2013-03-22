@@ -1,3 +1,5 @@
+from itertools import izip
+
 import numpy as np
 import numexpr as ne
 import ROOT
@@ -13,6 +15,18 @@ class DataManager(object):
             raise ValueError("wrong index dimension: dim(%s) != %d" % (values, self._data.ndim))
         pos = [np.digitize([v], b)[0] for v, b in zip(values, self.binning)]
         return tuple(pos)
+    def fill(self, objects, binvalues):
+        if len(binvalues) != len(self.binning):
+            raise ValueError("number of binning quantity different from the number of the axes")
+        binnumber = []
+        for binvaluesrow, bins in izip(binvalues, self.binning):
+            indexes_row = np.digitize(binvaluesrow, bins)
+            binnumber.append(indexes_row)
+        for pos in np.ndindex(self._data.shape):
+            mask = np.ones(len(objects), dtype = bool)
+            for p, v in izip(pos, binnumber):
+                mask &= (p == v)
+            self._data[pos] = objects[mask]
     def __getitem__(self, key):
         return self._data[self.position(key)]
     def __setitem__(self, key, value):
