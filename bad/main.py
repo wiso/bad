@@ -1,4 +1,3 @@
-import itertools
 from copy import copy, deepcopy
 import ROOT
 import logging
