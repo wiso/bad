@@ -14,6 +14,7 @@ install:
   - time sudo apt-get update -qq
   # Install the dependencies we need
   - time sudo apt-get install -qq python${PYTHON_SUFFIX}-numpy python${PYTHON_SUFFIX}-sphinx python${PYTHON_SUFFIX}-nose python${PYTHON_SUFFIX}-numexpr
+  - pip install numexpr
 
   # Install a ROOT binary that we custom-built in a 64-bit Ubuntu VM
   # for the correct Python / ROOT version
