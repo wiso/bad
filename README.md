@@ -1,4 +1,4 @@
-.. image:: https://travis-ci.org/wiso/bad.png?branch=master   :target: https://travis-ci.org/wiso/bad
+[![Build Status](https://travis-ci.org/wiso/bad.png?branch=master)](https://travis-ci.org/wiso/bad)
 
 bad
 ===
