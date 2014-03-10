@@ -2,7 +2,6 @@ language: python
 python:
 #  - "3.3"
   - "2.7"
-  - "2.6"
 
 env:
   - ROOT=5.34.05
@@ -25,6 +24,6 @@ install:
 script:
 
   # Check if root and PyROOT work ok
-  - time root -l -q
+  - time root -l -b -q
   - time python -c 'import ROOT; ROOT.TBrowser()'
   - nosetests bad/tests/test_datamanager.py
