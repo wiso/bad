@@ -14,6 +14,7 @@ install:
   # Install the dependencies we need
   - time sudo apt-get install -qq python${PYTHON_SUFFIX}-numpy python${PYTHON_SUFFIX}-sphinx python${PYTHON_SUFFIX}-nose python${PYTHON_SUFFIX}-numexpr
   - pip install numexpr
+  - pip install coveralls
 
   # Install a ROOT binary that we custom-built in a 64-bit Ubuntu VM
   # for the correct Python / ROOT version
@@ -26,7 +27,7 @@ script:
   # Check if root and PyROOT work ok
   - time root -l -b -q
   - time python -c 'import ROOT; ROOT.TBrowser()'
-  - nosetests
+  - coverage run --source=bad setup.py test
 
 after_success:
     - coveralls
