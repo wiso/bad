@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from numpy import nan
-from ..DataManager import DataManager, Mean
+from bad.DataManager import DataManager, Mean
 
 class TestDataManager(unittest.TestCase):
     def setUp(self):
