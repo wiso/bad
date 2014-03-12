@@ -1,0 +1,4 @@
+[run]
+branch = True
+source = bad
+include = */bad/*
