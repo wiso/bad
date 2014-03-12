@@ -30,7 +30,7 @@ script:
   # Check if root and PyROOT work ok
   - time root -l -b -q
   - time python -c 'import ROOT; ROOT.TBrowser()'
-  - py.test tests -v --cov bad --cov-report term-missing
+  - py.test tests -v --cov bad --cov-report term-missing --pep8 bad
 
 after_success:
     - coveralls
