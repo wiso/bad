@@ -1,6 +1,9 @@
 from copy import copy, deepcopy
 import ROOT
 import logging
+from ROOTReader import ROOTReader
+from DataManager import DataManager, Mean
+import numpy as np
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -113,13 +116,13 @@ class PlottingOrder(object):
         for action in ACTIONS:
             self.order[action] = order.get(action, None)
         
-def plot(plotting_order):
+def plot(dm, plotting_order, selection=None):
     logging.debug("creating file output.root")
     output_file = ROOT.TFile("output.root", "RECREATE")
-    loop_canvas(plotting_order, output_file)
+    loop_canvas(dm, plotting_order, output_file, selection)
     output_file.Close()
 
-def loop_canvas(plotting_order, output_file):
+def loop_canvas(dm, plotting_order, output_file, preselection):
     output_file.cd()
     loop = plotting_order.order[CANVAS]
     var = loop.variable
@@ -130,12 +133,12 @@ def loop_canvas(plotting_order, output_file):
                               "canvas %s: [%s, %s]" % (var, bin[0], bin[1]))
         logging.debug("creating canvas %s", canvas.GetName())
         canvas.SetFillColor(2)
-        loop_subplot(subloop, canvas)
+        loop_subplot(dm, subloop, canvas)
         canvas.Update()
         canvas.Write()
         canvas.SaveAs(canvas.GetName() + ".png")
 
-def loop_subplot(plotting_order, canvas):
+def loop_subplot(dm, plotting_order, canvas):
     canvas.cd()
     loop = plotting_order.order[SUBPLOT]
     var = loop.variable
@@ -149,18 +152,43 @@ def loop_subplot(plotting_order, canvas):
         subplot = canvas.cd(i+1)
         canvas.subplots.append(subplot)
         subplot.SetFillColor(4)
+        loop_color(dm, subloop, subplot)
         label = ROOT.TLatex(0.1, 0.9, "%s: [%s, %s]" % (var, bin[0], bin[1]))
         label.SetNDC()
         label.Draw()
         subplot.label = label
 
-def loop_color(plotting_order, subcanvas):
+def loop_color(dm, plotting_order, subcanvas):
     subcanvas.cd()
     loop = plotting_order.order[COLOR]
     var = loop.variable
     mg = ROOT.TMultiGraph("multigraph", "multigraph")
     for i,bin in enumerate(loop.iterbins()):
-        graph = None
-        color = i+1
+        graph = ROOT.TGraphErrors()
+        color = i + 1
         graph.SetLineColor(color)
         mg.Add(graph)
+
+if __name__ == '__main__':
+    filename = 'mlpHiggs.root'
+    treename = 'bg_filtered'
+    quantity = "acolin"
+    
+    p1 = PlottingClass("acolin", [100, 120, 140, 160], CANVAS)
+    p2 = PlottingClass("ptsumf", [0,0.2,0.3], SUBPLOT)
+    p3 = PlottingClass("minvis", [40, 50, 60, 70, 80, 100], COLOR)
+    
+    pp = PlottingProduct((p1, p2, p3))
+
+    dm = DataManager(("acolin", "ptsumf", "minvis"),
+                     ([100, 120, 140, 160], [0,0.2,0.3], [40, 50, 60, 70, 80, 100]), dtype=np.object)
+
+    reader = ROOTReader(filename, treename, (quantity,), ("acolin", "ptsumf", "minvis"))
+    data = reader()
+    dm.fill(data[quantity], (data["acolin"], data["ptsumf"], data["minvis"]))
+
+    means = dm.apply(Mean())
+
+    plot(dm, PlottingOrder({CANVAS: p1, SUBPLOT:p2, COLOR:p3}))
+
+    raw_input()

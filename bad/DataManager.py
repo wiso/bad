@@ -9,7 +9,7 @@ class DataManager(object):
     def __init__(self, axis_names, binning, dtype=None):
         self.axis_names = axis_names
         self.binning = binning
-        shape = [len(b)+2 for b in binning]
+        shape = [len(b) + 2 for b in binning]
         self._data = np.zeros(shape, dtype=dtype)
 
     def position(self, values):
