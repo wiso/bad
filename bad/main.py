@@ -138,12 +138,7 @@ class PlottingOrder(object):
             self.order[action] = order.get(action, None)
 
 
-
-
-
-
 def plot(plotting_order):
-
     logging.debug("creating file output.root")
     output_file = ROOT.TFile("output.root", "RECREATE")
     loop_canvas(dm, plotting_order, output_file, selection)
@@ -151,10 +146,6 @@ def plot(plotting_order):
 
 
 def loop_canvas(dm, plotting_order, output_file, preselection):
-
-
-
-
     output_file.cd()
     loop = plotting_order.order[CANVAS]
     var = loop.variable
@@ -171,11 +162,7 @@ def loop_canvas(dm, plotting_order, output_file, preselection):
         canvas.SaveAs(canvas.GetName() + ".png")
 
 
-
-
-
 def loop_subplot(plotting_order, canvas):
-
     canvas.cd()
     loop = plotting_order.order[SUBPLOT]
     var = loop.variable
@@ -196,22 +183,14 @@ def loop_subplot(plotting_order, canvas):
         subplot.label = label
 
 
-
-
-
 def loop_color(plotting_order, subcanvas):
->>>>>>> 0013649aac3c8caa4b90fcc5f9f7b65e1e2bd1ee
     subcanvas.cd()
     loop = plotting_order.order[COLOR]
 #    var = loop.variable
     mg = ROOT.TMultiGraph("multigraph", "multigraph")
 
-    for i,bin in enumerate(loop.iterbins()):
+    for i, bin in enumerate(loop.iterbins()):
         graph = ROOT.TGraphErrors()
-
-
-
-
         color = i + 1
         graph.SetLineColor(color)
         mg.Add(graph)
@@ -220,15 +199,15 @@ if __name__ == '__main__':
     filename = 'mlpHiggs.root'
     treename = 'bg_filtered'
     quantity = "acolin"
-    
+
     p1 = PlottingClass("acolin", [100, 120, 140, 160], CANVAS)
-    p2 = PlottingClass("ptsumf", [0,0.2,0.3], SUBPLOT)
+    p2 = PlottingClass("ptsumf", [0, 0.2, 0.3], SUBPLOT)
     p3 = PlottingClass("minvis", [40, 50, 60, 70, 80, 100], COLOR)
-    
+
     pp = PlottingProduct((p1, p2, p3))
 
     dm = DataManager(("acolin", "ptsumf", "minvis"),
-                     ([100, 120, 140, 160], [0,0.2,0.3], [40, 50, 60, 70, 80, 100]), dtype=np.object)
+                     ([100, 120, 140, 160], [0, 0.2, 0.3], [40, 50, 60, 70, 80, 100]), dtype=np.object)
 
     reader = ROOTReader(filename, treename, (quantity,), ("acolin", "ptsumf", "minvis"))
     data = reader()
@@ -236,6 +215,6 @@ if __name__ == '__main__':
 
     means = dm.apply(Mean())
 
-    plot(dm, PlottingOrder({CANVAS: p1, SUBPLOT:p2, COLOR:p3}))
+    plot(dm, PlottingOrder({CANVAS: p1, SUBPLOT: p2, COLOR: p3}))
 
     raw_input()

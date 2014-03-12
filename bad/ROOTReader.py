@@ -53,7 +53,7 @@ def GetValuesFromTreeWithProof(tree, variable, cut='', flatten=False, is1D=False
     2 subsequent calls will not have aligned values in general"""
     if not is1D and ':' not in variable.replace('::', ''):
         # FIXME: this is correct in general (e.g: a > 0 ? 1 : 0)
-        variable = '(1):{0}'.format(variable) # Draw in 1D case would produce a TH1, we need a TGraph
+        variable = '(1):{0}'.format(variable)  # Draw in 1D case would produce a TH1, we need a TGraph
         is1D = True
     if not hasattr(ROOT, 'gProof'):
         proof = ROOT.TProof.Open('')
