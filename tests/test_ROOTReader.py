@@ -74,7 +74,25 @@ class TestReader(unittest.TestCase):
 
     def test_read2D_formula(self):
         x, y = GetValuesFromTree(tree, "var_f:var_i * 2.")
+        self.assertEqual(type(x), np.ndarray)
+        self.assertEqual(type(y), np.ndarray)
         self.assertEqual(len(x), nentries)
         self.assertEqual(len(y), nentries)
         np.testing.assert_array_equal(x, np.arange(1000, dtype=int))
         np.testing.assert_array_equal(y, np.arange(1000, dtype=int) * 2.)
+
+        r = GetValuesFromTree(tree, "var_f:var_i")
+        self.assertEqual(type(r), np.ndarray)
+        self.assertEqual(r.shape, (2, nentries))
+
+        r = GetValuesFromTree(tree, "var_f:var_i", flatten=True)
+        self.assertEqual(type(r), np.ndarray)
+        self.assertEqual(r.shape, (2 * nentries, ))
+
+    def test_invalid_formula(self):
+        with self.assertRaises(ValueError):
+            GetValuesFromTree(tree, "aa")
+        with self.assertRaises(ValueError):
+            GetValuesFromTree(tree, "var_i:aa")
+        with self.assertRaises(ValueError):
+            GetValuesFromTree(tree, "var_i***2")

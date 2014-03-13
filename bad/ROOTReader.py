@@ -40,8 +40,15 @@ def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
         N = t.Draw(variable, cut, 'goff para')
 
     if N < 0:
-        raise ValueError("problem with formula %s or cut %s with file %s" %
-                         (variable, cut, t.GetCurrentFile().GetName()))
+        current_file = t.GetCurrentFile()
+        msg = None
+        if current_file:
+            msg = ("problem with formula %s or cut %s with file %s" %
+                   (variable, cut, current_file.GetName()))
+        else:
+            msg = "problem with formula %s or cut %s" % (variable, cut)
+        raise ValueError(msg)
+
     Ndim = GetNdim(t)
 
     if Ndim == 1:
