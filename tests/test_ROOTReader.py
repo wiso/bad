@@ -72,6 +72,17 @@ class TestReader(unittest.TestCase):
         self.assertEqual(x.shape, (1000,))
         np.testing.assert_array_almost_equal(x, np.sin(np.arange(1000, dtype=float) * 2.))
 
+    def test_read1D_type(self):
+        x = GetValuesFromTree(tree, "var_i")
+        self.assertEqual(x.dtype, np.int)
+        x = GetValuesFromTree(tree, "var_f")
+        self.assertEqual(x.dtype, np.float)
+
+    def test_read1D_formula_cut(self):
+        x = GetValuesFromTree(tree, "var_i**2", "var_i != 10")
+        self.assertEqual(len(x), nentries - 1)
+        self.assertEqual(x.shape, (999,))
+
     def test_read2D_formula(self):
         x, y = GetValuesFromTree(tree, "var_f:var_i * 2.")
         self.assertEqual(type(x), np.ndarray)
@@ -88,6 +99,18 @@ class TestReader(unittest.TestCase):
         r = GetValuesFromTree(tree, "var_f:var_i", flatten=True)
         self.assertEqual(type(r), np.ndarray)
         self.assertEqual(r.shape, (2 * nentries, ))
+
+    def test_readManyD_formula(self):
+        r = GetValuesFromTree(tree, "var_f:var_f**2:var_f**3:var_f**4:var_f**5:var_i")
+        self.assertEqual(type(r), np.ndarray)
+        self.assertEqual(len(r), 6)
+        self.assertEqual(r.shape, (6, 1000))
+        np.testing.assert_array_almost_equal(np.arange(1000), r[0])
+        np.testing.assert_array_almost_equal(np.arange(1000) ** 2, r[1])
+        np.testing.assert_array_almost_equal(np.arange(1000) ** 3, r[2])
+        np.testing.assert_array_almost_equal(np.arange(1000) ** 4, r[3])
+        np.testing.assert_array_almost_equal(np.arange(1000) ** 5, r[4])
+        np.testing.assert_array_equal(np.arange(1000), r[5])
 
     def test_invalid_formula(self):
         with self.assertRaises(ValueError):

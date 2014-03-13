@@ -28,7 +28,13 @@ def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
         "Return a ndarray from the i-th expression used with TTree::Draw"
         data = tree.GetVal(i)
         data.SetSize(N)
-        return np.fromiter(data, dtype=float)
+        dtype = np.float
+        formula = tree.GetVar(i)
+        if formula.IsInteger():
+            dtype = np.int
+        elif formula.IsString():
+            dtype = str
+        return np.fromiter(data, dtype=dtype)
 
     t = tree  # tree.Clone()
     FixEstimate(tree)
@@ -57,8 +63,6 @@ def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
         return np.ravel([GetData(t, i, N) for i in range(Ndim)])
     else:
         return np.array([GetData(t, i, N) for i in range(Ndim)])
-    # TODO: Return np.ndarray for Ndim > 1.
-    # TODO: Split call in pieces of size 4 and merge
 
 
 def GetValuesFromTreeWithProof(tree, variable, cut='', flatten=False, is1D=False):
