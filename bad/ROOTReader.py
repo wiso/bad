@@ -10,12 +10,13 @@ def FixEstimate(tree):
     tree.SetEstimate(4 * 10 * tree.GetEntries())
 
 
-def GetValuesFromTree(tree, variable, cut='', flatten=True):
+def GetValuesFromTree(tree, variable, cut='', flatten=True, Nevents=-1):
     """
     adapted from PyH4l of B. Lenzi
     GetValuesFromTree(tree, variable, cut) ->
     Return a ndarray with <variable> which can be single or multi-dimensional
     """
+    assert tree
     def GetNdim(tree):
         "Return the dimension of the last expression used with TTree::Draw"
         for i in xrange(100):
@@ -31,7 +32,12 @@ def GetValuesFromTree(tree, variable, cut='', flatten=True):
     t = tree  # tree.Clone()
     FixEstimate(tree)
 #     Nevents = int(1e4)
-    N = t.Draw(variable, cut, 'goff')  # , Nevents)
+    Ndim = variable.count(":") + 1
+    if Ndim == 1:
+        N = t.Draw(variable, cut, 'goff')
+    else:
+        N = t.Draw(variable, cut, 'goff para')
+
     if N < 0:
         raise ValueError("problem with formula %s or cut %s with file %s" %
                          (variable, cut, t.GetCurrentFile().GetName()))
