@@ -10,13 +10,14 @@ def FixEstimate(tree):
     tree.SetEstimate(4 * 10 * tree.GetEntries())
 
 
-def GetValuesFromTree(tree, variable, cut='', flatten=True, Nevents=-1):
+def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
     """
     adapted from PyH4l of B. Lenzi
     GetValuesFromTree(tree, variable, cut) ->
     Return a ndarray with <variable> which can be single or multi-dimensional
     """
     assert tree
+
     def GetNdim(tree):
         "Return the dimension of the last expression used with TTree::Draw"
         for i in xrange(100):

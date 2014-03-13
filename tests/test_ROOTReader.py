@@ -71,3 +71,10 @@ class TestReader(unittest.TestCase):
         self.assertEqual(len(x), nentries)
         self.assertEqual(x.shape, (1000,))
         np.testing.assert_array_almost_equal(x, np.sin(np.arange(1000, dtype=float) * 2.))
+
+    def test_read2D_formula(self):
+        x, y = GetValuesFromTree(tree, "var_f:var_i * 2.")
+        self.assertEqual(len(x), nentries)
+        self.assertEqual(len(y), nentries)
+        np.testing.assert_array_equal(x, np.arange(1000, dtype=int))
+        np.testing.assert_array_equal(y, np.arange(1000, dtype=int) * 2.)
