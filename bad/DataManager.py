@@ -1,7 +1,6 @@
 from itertools import izip
 
 import numpy as np
-import numexpr as ne
 import ROOT
 
 
@@ -52,28 +51,6 @@ class DataManager(object):
                              dtype=self._data.dtype)
         new_dm._data = f(self._data)
         return new_dm
-
-
-class Estimator(object):
-    name = None
-    axis = "%s"
-
-    def __repr__(self):
-        return "<Estimator %s at %s>" % (self.name, hex(id(self)))
-
-    def axis_name(self, quantity):
-        return self.axis % quantity
-
-
-class Mean(Estimator):
-    name = "mean"
-    axis = "<%s>"
-
-    def __call__(self, data):
-        return np.mean(data)
-
-    def call_ne(self, data):
-        return ne.evaluate("sum(data)") / len(data)
 
 
 def histogramming(data, nbins, min, max, name_histo=None, title_histo=None):
