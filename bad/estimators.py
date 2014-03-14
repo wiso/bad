@@ -3,6 +3,7 @@ import numexpr as ne
 from functools import wraps
 ne.set_num_threads(2)
 
+
 def errorize(f):
     """
     use this decorator when defining function on data (the mean, the rms, the guassian fit), ...
@@ -104,7 +105,7 @@ if __name__ == '__main__':
     from timeit import Timer
 
     for estimator in "Mean()", "Number(2)", "maximum()":
-        setup="""
+        setup = """
 from __main__ import Mean, Number, maximum
 import numpy as np
 data = np.random.random(10000)
