@@ -1,7 +1,8 @@
 import unittest
 import numpy as np
 from numpy import nan
-from bad.DataManager import DataManager, Mean
+from bad.DataManager import DataManager
+from bad.estimators import Mean
 
 
 class TestDataManager(unittest.TestCase):
