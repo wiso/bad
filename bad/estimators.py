@@ -88,6 +88,8 @@ class SmallestInterval(Estimator):
             return None
         if not N:
             return None
+        if self.integral == 1:
+            return 0, len(data)
         if w is not None:
             return min(endpointsForFraction(data, w, self.integral), key=lambda x: x[1] - x[0])
         xsorted = np.sort(data)
@@ -138,9 +140,6 @@ class Mean(Estimator):
             N = sumW ** 2 / (w ** 2).sum()  # effective entries
             return value, rms.value_np(data, w) / np.sqrt(N)
         else:
-            print 1, np.mean(data)
-            print 2, rms.value_np(data)
-            print 3, rms.value_np(data)[0]
             return np.mean(data), rms.value_np(data)[0] / np.sqrt(len(data))
 
     def value_ne(self, data, w):
