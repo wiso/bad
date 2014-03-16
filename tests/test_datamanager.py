@@ -24,17 +24,18 @@ class TestDataManager(unittest.TestCase):
         for x, y in zip(result.flat, dm.data().flat):
             self.assertTrue(all(np.array(x) == y))
 
-    def test_apply(self):
-        dm = DataManager(('axis1', 'axis2'),
-                         ((0, 10, 20), (0, 100, 200)),
-                         np.object)
-        dm.fill(self.data, (self.data_var1, self.data_var2))
-        result = [[nan, nan, nan, nan, nan],
-                  [nan, 0., nan, nan, nan],
-                  [nan, nan, 1., nan, nan],
-                  [nan, nan, nan, 3., nan],
-                  [nan, nan, nan, nan, nan]]
+#    def test_apply(self):
+#        dm = DataManager(('axis1', 'axis2'),
+#                         ((0, 10, 20), (0, 100, 200)),
+#                         np.object)
+#        dm.fill(self.data, (self.data_var1, self.data_var2))
+#        result = [[nan, nan, nan, nan, nan],
+#                  [nan, 0., nan, nan, nan],
+#                  [nan, nan, 1., nan, nan],
+#                  [nan, nan, nan, 3., nan],
+#                  [nan, nan, nan, nan, nan]]
+#
+#        np.testing.assert_array_equal(result, dm.apply(Mean()).data())
 
-        np.testing.assert_array_equal(result, dm.apply(Mean()).data())
 if __name__ == '__main__':
     unittest.main()
