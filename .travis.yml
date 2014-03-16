@@ -14,6 +14,8 @@ install:
   # Install the dependencies we need
   - time sudo apt-get install -qq python${PYTHON_SUFFIX}-numpy python${PYTHON_SUFFIX}-sphinx python${PYTHON_SUFFIX}-nose python${PYTHON_SUFFIX}-numexpr
   - pip install numexpr
+  - pip install numpy
+  - pip install scipy
   - pip install coveralls
   - pip install pytest
   - pip install pytest-cov
