@@ -115,7 +115,7 @@ def get_truncated_data(data, w=None, fraction=0.9):
 def rms(data, w=None):
     N = len(data)
     if N < 3:
-        return np.nan
+        return np.nan, np.nan
     if w is None:
         std = np.std(data)
     else:
@@ -138,7 +138,10 @@ class Mean(Estimator):
             N = sumW ** 2 / (w ** 2).sum()  # effective entries
             return value, rms.value_np(data, w) / np.sqrt(N)
         else:
-            return np.mean(data), rms.value_np(data) / np.sqrt(len(data))
+            print 1, np.mean(data)
+            print 2, rms.value_np(data)
+            print 3, rms.value_np(data)[0]
+            return np.mean(data), rms.value_np(data)[0] / np.sqrt(len(data))
 
     def value_ne(self, data, w):
         return ne.evaluate('sum(data)') / len(data)
@@ -172,7 +175,7 @@ def stat(data, w=None):
 @create_estimator()
 def sumw(data, w=None):
     if w is None:
-        return stat(data)
+        return stat().value_np(data)[0]
     return np.sum(w), np.sqrt(np.square(w).sum())
 
 
@@ -216,6 +219,7 @@ def skew(data, w=None):
 def get_truncated_estimators(original):
     class C(Estimator):
         name = "truncated_" + original.name
+        _original = original
 
         def __init__(self, fraction=0.9):
             super(C, self).__init__()
@@ -225,7 +229,7 @@ def get_truncated_estimators(original):
         def value_np(self, data, w=None):
             data, w = get_truncated_data(data, w, self.fraction)
             return original.value_np(data, w)
-    C.__name__ = "truncated" + original.__name__
+    C.__name__ = "Truncated" + original.__name__
 
     return C
 
