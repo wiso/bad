@@ -65,7 +65,48 @@ def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
         return np.array([GetData(t, i, N) for i in range(Ndim)])
 
 
-def GetValuesFromTreeWithProof(tree, variable, cut='', flatten=False, is1D=False):
+def GetValuesFromTreeWithProof(tree, variable, cut='', flatten=False, Nevents=-1):
+    assert tree
+
+    FixEstimate(tree)
+
+    if not hasattr(ROOT, 'gProof'):
+        proof = ROOT.TProof.Open('')
+        if not proof:
+            raise ValueError("Cannot open proof session")
+    if not isinstance(tree, ROOT.TChain):
+        logging.debug('Converting tree to TChain')
+        chain = ROOT.TChain(tree.GetName())
+        if not tree.GetCurrentFile():
+            raise ValueError("cannot use proof on in-memory file")
+        chain.Add(tree.GetDirectory().GetName())
+        tree = chain
+    Ndim = variable.count(":") + 1
+    tree.SetProof()
+    variables = variable.split(":")
+    result = []
+    for v in variables:
+        N = tree.Draw("Entry$:{0}".format(v), cut)
+        output = ROOT.gProof.GetOutputList()
+        for o in output:
+            if isinstance(o, ROOT.TGraph):
+                break
+        else:
+            raise ValueError("cannot find TGraph in proof output")
+        y = o.GetX()
+        y.SetSize(N)
+        x = o.GetY()
+        x.SetSize(N)
+        xy = np.array([x, y])
+        xy = xy[:, xy[0, :].argsort()]
+        result.append(xy[1])
+    if Ndim == 1:
+        return result[0]
+    else:
+        return np.array(result)
+
+
+def GetValuesFromTreeWithProofOld(tree, variable, cut='', flatten=False, is1D=False):
     """GetValuesFromTreeWithProof(tree, variable, cut = '', flatten=False, is1D = False)
     Use proof to load branches. Works just like GetValuesFromTree but
     2 subsequent calls will not have aligned values in general"""

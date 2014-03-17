@@ -4,7 +4,7 @@ import numpy as np
 
 import ROOT
 
-from bad.ROOTReader import GetValuesFromTree
+from bad.ROOTReader import GetValuesFromTree, GetValuesFromTreeWithProof
 
 
 #@atexit.register
@@ -119,3 +119,14 @@ class TestReader(unittest.TestCase):
             GetValuesFromTree(tree, "var_i:aa")
         with self.assertRaises(ValueError):
             GetValuesFromTree(tree, "var_i***2")
+
+    def test_numentries_proof(self):
+        f = ROOT.TFile("tests/test_file.root")
+        t = f.Get("tree")
+
+        r = GetValuesFromTreeWithProof(t, "var_i")
+        np.testing.assert_array_almost_equal(np.arange(1000), r)
+        self.assertEqual(t.GetEntries(), len(r))
+
+        r = GetValuesFromTreeWithProof(t, "var_i**2")
+        np.testing.assert_array_almost_equal(np.arange(1000) ** 2, r)
