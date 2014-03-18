@@ -36,9 +36,28 @@ class TestEstimators(unittest.TestCase):
 
         m1, m2 = m(empty)
         self.assertTrue(np.isnan(m1))
+        self.assertTrue(np.isnan(m2))
 
         m1, m2 = m(data_nan)
         self.assertTrue(np.isnan(m1))
+        self.assertTrue(np.isnan(m1))
+
+
+    def test_RMS(self):
+        r = Rms()
+        r1, r2 = r(data)
+        self.assertAlmostEqual(r1, np.std(data))
+
+        r1, r2 = r(zeros)
+        self.assertAlmostEqual(r1, 0)
+
+        r1, r2 = r(empty)
+        self.assertTrue(np.isnan(r1))
+        self.assertTrue(np.isnan(r2))
+
+        r1, r2 = r(data_nan)
+        self.assertTrue(np.isnan(r1))
+        self.assertTrue(np.isnan(r2))
 
     def test_truncated(self):
         for est in all_estimators:
