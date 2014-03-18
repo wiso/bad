@@ -73,7 +73,6 @@ def GetValuesFromFilenameTree(filename, treename, variable, cut='', flatten=Fals
 
 
 def GetValuesFromTreeWrapper(args):
-    print "running wrapper with ", args
     return GetValuesFromTree(*args)
 
 
@@ -81,6 +80,8 @@ def GetValuesFromTreeParallel(filename, treename, variable, cut='', flatten=Fals
     from multiprocessing import Pool
     chain = ROOT.TChain(treename)
     chain.Add(filename)
+#    if not chain.GetTree():
+#        raise ValueError("cannot find tree %s")
 
     total_entries = chain.GetEntries()
     entries_per_job = [int(total_entries / nproc)] * nproc
