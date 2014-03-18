@@ -42,6 +42,10 @@ class TestEstimators(unittest.TestCase):
         self.assertTrue(np.isnan(m1))
         self.assertTrue(np.isnan(m1))
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1ba77128569b2c0bdd9279d24a5024ae48b6f662
     def test_RMS(self):
         r = Rms()
         r1, r2 = r(data)
