@@ -1,16 +1,16 @@
 import unittest
 import numpy as np
-#import atexit
+import atexit
 
 import ROOT
 
-from bad.ROOTReader import GetValuesFromTree, GetValuesFromTreeWithProof
+from bad.ROOTReader import GetValuesFromTree, GetValuesFromTreeWithProof, GetValuesFromTreeParallel
 
 
-#@atexit.register
-#def quite_exit():
-#    print "quitting"
-#    ROOT.gSystem.Exit(0)
+@atexit.register
+def quite_exit():
+    print "quitting"
+    ROOT.gSystem.Exit(0)
 
 from array import array
 tree = ROOT.TTree("tree", "tree")
@@ -130,3 +130,15 @@ class TestReader(unittest.TestCase):
 
         r = GetValuesFromTreeWithProof(t, "var_i**2")
         np.testing.assert_array_almost_equal(np.arange(1000) ** 2, r)
+
+    def test_numentries_parallel(self):
+        f = ROOT.TFile("tests/test_file.root")
+        t = f.Get("tree")
+
+        r = GetValuesFromTreeParallel("tests/test_file.root", "tree", "var_i")
+        self.assertEqual(t.GetEntries(), len(r))
+
+        r = GetValuesFromTreeParallel("tests/test_file.root", "tree", "var_i:var_f+1")
+        self.assertEqual(r.shape, (2, t.GetEntries()))
+
+        print r
