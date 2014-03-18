@@ -114,7 +114,7 @@ def get_truncated_data(data, w=None, fraction=0.9):
 
 
 @create_estimator(ax_title="RMS({0})")
-def rms(data, w=None):
+def Rms(data, w=None):
     N = len(data)
     if N < 3:
         return np.nan, np.nan
@@ -138,9 +138,9 @@ class Mean(Estimator):
         if w is not None:
             value, sumW = np.average(data, weights=w, returned=True)
             N = sumW ** 2 / (w ** 2).sum()  # effective entries
-            return value, rms.value_np(data, w) / np.sqrt(N)
+            return value, Rms.value_np(data, w) / np.sqrt(N)
         else:
-            return np.mean(data), rms.value_np(data)[0] / np.sqrt(len(data))
+            return np.mean(data), Rms.value_np(data)[0] / np.sqrt(len(data))
 
     def value_ne(self, data, w):
         return ne.evaluate('sum(data)') / len(data)
@@ -192,7 +192,7 @@ def median(data, w=None):
     for i, j in enumerate(wSum):
         if j > m:
             med = 0.5 * (data[sort_index[i]] + data[sort_index[i - 1]])
-            return med, rms(data, w)[0] / np.sqrt(N) * 1.253
+            return med, Rms(data, w)[0] / np.sqrt(N) * 1.253
 
 
 @create_estimator()
@@ -234,23 +234,23 @@ def get_truncated_estimators(original):
 
 
 TruncatedMean = get_truncated_estimators(Mean)
-TruncatedRMS = get_truncated_estimators(rms)
+TruncatedRMS = get_truncated_estimators(Rms)
 TruncatedMedian = get_truncated_estimators(median)
 TruncatedSkew = get_truncated_estimators(skew)
 
 
 class TruncatedRMSRel(Estimator):
-    name = "truncated_rms_rel"
+    name = "truncated_Rms_rel"
 
     def __init__(self, fraction=0.9):
         super(TruncatedRMSRel, self).__init__()
         self.fraction = fraction
 
     def value_np(self, data, w=None):
-        rms, rmse = TruncatedRMS(self.fraction)(data, w)
+        Rms, Rmse = TruncatedRMS(self.fraction)(data, w)
         m, me = TruncatedMean(self.fraction)(data, w)
-        value = rms / m
-        error = np.sqrt((rmse / rms) ** 2 + (me / m) ** 2) * value
+        value = Rms / m
+        error = np.sqrt((Rmse / Rms) ** 2 + (me / m) ** 2) * value
         return value, error
 
 
@@ -263,8 +263,8 @@ class TailOneSigna(Estimator):
 
     def value_np(self, data, w=None):
         mean = TruncatedMean(self.fraction)(data, w)
-        rms = TruncatedRMS(self.fraction)(data, w)
-        cut = mean[0] - rms[0]
+        Rms = TruncatedRMS(self.fraction)(data, w)
+        cut = mean[0] - Rms[0]
         try:
             tail = len(data[data < cut])
             return tail / float(len(data))
