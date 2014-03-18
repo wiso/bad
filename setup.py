@@ -49,21 +49,13 @@ setup(
     author="Ruggero Turra",
     author_email="ruggero.turra@cern.ch",
     description="An application to create performance plots using ROOT",
-    keywords="ROOT, python, plots, performance",
+    keywords="ROOT, physics, particle, detector, python, plots, performance",
     long_description=read("README.md"),
     url="https://github.com/wiso/bad",
     tests_require=['pytest'],
-    cmdclass = {'test': PyTest},
+    cmdclass={'test': PyTest},
+    extras_require={
+        'test': ['nose', 'unittest2', 'flake8'],
+        'development': ['zest.releaser', 'check-manifest'],
+        }
     )
-
-extra_require = {
-    'test': [
-        'nose',
-        'unittest2',
-        'flake8',
-        ],
-    'development': [
-        'zest.releaser',
-        'check-manifest',
-        ],
-}
