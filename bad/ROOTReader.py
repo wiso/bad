@@ -10,7 +10,7 @@ def FixEstimate(tree):
     tree.SetEstimate(4 * 10 * tree.GetEntries())
 
 
-def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
+def GetValuesFromTree(tree, variable, cut='', flatten=False, nentries=1000000000, firstentry=0):
     """
     adapted from PyH4l of B. Lenzi
     GetValuesFromTree(tree, variable, cut) ->
@@ -41,9 +41,9 @@ def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
 #     Nevents = int(1e4)
     Ndim = variable.count(":") + 1
     if Ndim == 1:
-        N = t.Draw(variable, cut, 'goff')
+        N = t.Draw(variable, cut, 'goff', nentries, firstentry)
     else:
-        N = t.Draw(variable, cut, 'goff para')
+        N = t.Draw(variable, cut, 'goff para', nentries, firstentry)
 
     if N < 0:
         current_file = t.GetCurrentFile()
@@ -63,6 +63,33 @@ def GetValuesFromTree(tree, variable, cut='', flatten=False, Nevents=-1):
         return np.ravel([GetData(t, i, N) for i in range(Ndim)])
     else:
         return np.array([GetData(t, i, N) for i in range(Ndim)])
+
+
+def GetValuesFromFilenameTree(filename, treename, variable, cut='', flatten=False, nentries=1000000000, firstentry=0):
+    f = ROOT.TFile.Open(filename)
+    tree = f.Get(treename)
+    return GetValuesFromTree(tree, variable, cut, flatten, nentries, firstentry)
+
+
+def GetValuesFromTreeWrapper(args):
+    print "running wrapper with ", args
+    return GetValuesFromTree(*args)
+
+
+def GetValuesFromTreeParallel(filename, treename, variable, cut='', flatten=False, nproc=1):
+    from multiprocessing import Pool
+    chain = ROOT.TChain(treename)
+    chain.Add(filename)
+
+    total_entries = chain.GetEntries()
+    entries_per_job = [int(total_entries / nproc)] * nproc
+    entries_per_job[-1] += total_entries - sum(entries_per_job)
+    first_entries = np.cumsum(entries_per_job) - entries_per_job[0]
+
+    pool = Pool(processes=nproc)
+    args = [(chain, variable, cut, flatten, epj, fe) for (epj, fe) in zip(entries_per_job, first_entries)]
+    results = pool.map(GetValuesFromTreeWrapper, args)
+    return np.concatenate(results)
 
 
 def GetValuesFromTreeWithProof(tree, variable, cut='', flatten=False, Nevents=-1):
