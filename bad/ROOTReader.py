@@ -1,6 +1,7 @@
 import ROOT
 import numpy as np
 import logging
+logger = logging.getLogger(__name__)
 
 
 def FixEstimate(tree):
@@ -78,7 +79,7 @@ def GetValuesFromTreeWithProof(tree, variable, cut='', flatten=False, is1D=False
         if not proof:
             raise ValueError("Cannot open proof session")
     if not isinstance(tree, ROOT.TChain):
-        logging.debug('Converting tree to TChain')
+        logger.debug('Converting tree to TChain')
         chain = ROOT.TChain(tree.GetName())
         chain.Add(tree.GetDirectory().GetName())
         tree = chain
@@ -124,6 +125,6 @@ class ROOTReader(object):
     def __call__(self):
         result = {}
         for q in self.quantities:
-            logging.info("dumping quantity %s", q)
+            logger.info("dumping quantity %s", q)
             result[q] = GetValuesFromTree(self.tree, q, cut=self.selection, flatten=True)
         return result

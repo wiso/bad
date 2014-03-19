@@ -5,7 +5,8 @@ from ROOTReader import ROOTReader
 from DataManager import DataManager, Mean
 import numpy as np
 
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.basicConfig(level=logger.DEBUG)
 
 # action list
 
@@ -139,7 +140,7 @@ class PlottingOrder(object):
 
 
 def plot(plotting_order):
-    logging.debug("creating file output.root")
+    logger.debug("creating file output.root")
     output_file = ROOT.TFile("output.root", "RECREATE")
     loop_canvas(dm, plotting_order, output_file, selection)
     output_file.Close()
@@ -154,7 +155,7 @@ def loop_canvas(dm, plotting_order, output_file, preselection):
         subloop.order[CANVAS].binning = (bin[0], bin[1])
         canvas = ROOT.TCanvas("canvas_%s%s-%s" % (var, bin[0], bin[1]),
                               "canvas %s: [%s, %s]" % (var, bin[0], bin[1]))
-        logging.debug("creating canvas %s", canvas.GetName())
+        logger.debug("creating canvas %s", canvas.GetName())
         canvas.SetFillColor(2)
         loop_subplot(dm, subloop, canvas)
         canvas.Update()
@@ -172,7 +173,7 @@ def loop_subplot(plotting_order, canvas):
     canvas.Divide(1, len(bins))
     canvas.subplots = []
     for i, bin in enumerate(bins):
-        logging.debug("creating subplot for %s: [%s, %s]" % (var, bin[0], bin[1]))
+        logger.debug("creating subplot for %s: [%s, %s]" % (var, bin[0], bin[1]))
         subplot = canvas.cd(i + 1)
         canvas.subplots.append(subplot)
         subplot.SetFillColor(4)
